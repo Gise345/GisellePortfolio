@@ -230,6 +230,7 @@
 
 const form = document.querySelector('.php-email-form');
 const submitButton = form.querySelector('button[type="submit"]');
+const rawMessageElement = document.querySelector('.error-message'); // Assuming this is where the raw message appears
 
 form.addEventListener('submit', function(e) {
   e.preventDefault();
@@ -245,6 +246,7 @@ form.addEventListener('submit', function(e) {
     if (data.status === 'success') {
       showSuccessNotification(data.message);
       form.reset();
+      rawMessageElement.style.display = 'none'; // Hide the raw message
     } else {
       showErrorNotification('An error occurred. Please try again.');
     }
@@ -286,3 +288,4 @@ function showErrorNotification(message) {
     notification.remove();
   }, 5000);
 }
+
