@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>GeoNames API Task</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link href="" rel="icon">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="./favicon.png" type="image/x-icon">
+  </head>
+  <body>
+    <div id=”preloader”></div>
+    <main>
+        <h1>GeoNames API Task For IT Career Switch</h1>  
+    </main>
+    <table>
+      <thead>
+        <tr>
+            <th>API Name</th>
+            <th>API Description</th>
+            <th></th>
+            <th>Result</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+            <td>Weather API</td>
+            <td>
+                <p>Get weather data</p>
+                <input type="text" id="north" placeholder="North Latitude">
+                <input type="text" id="south" placeholder="South Latitude">
+                <input type="text" id="east" placeholder="East Longitude">
+                <input type="text" id="west" placeholder="West Longitude">
+            </td>
+            <td><button id="submitWeather">Submit</button></td>
+            <td id="weatherResult"></td>
+        </tr>
+
+        <tr>
+            <td>Country Info API</td>
+            <td>
+                <p>Get information about countries.</p>
+                <input type="text" id="country" placeholder="Country Code (e.g., US)">
+                <select id="language">
+                    <option value="en">English</option>
+                    
+                </select>
+            </td>
+            <td><button id="submitCountryInfo">Submit</button></td>
+            <td id="countryInfoResult"></td>
+        </tr>
+        <tr>
+
+            <td>Earthquakes API</td>
+            <td>
+                <p>Get earthquake data for a specific area.</p>
+                <input type="text" id="northN" placeholder="North Latitude">
+                <input type="text" id="southS" placeholder="South Latitude">
+                <input type="text" id="eastE" placeholder="East Longitude">
+                <input type="text" id="westW" placeholder="West Longitude">
+                <input type="text" id="date" placeholder="Date (YYYY-MM-DD)">
+                <input type="text" id="minMagnitude" placeholder="Min Magnitude">
+            </td>
+            <td><button id="submitEarthquakes">Submit</button></td>
+            <td id="earthquakesResult"></td>
+        </tr>
+      </tbody>
+
+    </table>
+
+
+   
+    <script src="js/jquery-3.7.1.min.js"></script>
+    <script src="js/script.js"></script>
+
+  </body>
+</html>

@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title>Gazetteer</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="favicon_io/site.webmanifest">
+      
+     <!-- Bootstrap CSS -->
+     <link rel="stylesheet" href="css/bootstrap.min.css">
+
+
+     <!--css leaflet links-->
+     <link rel="stylesheet" href="css/leafletCore.css" />
+     <link rel="stylesheet" href="css/leaflet.css">
+     <link rel="stylesheet" href="css/toastify.css">
+     <link rel="stylesheet" href="css/MarkerCluster.Default.css">
+     <link rel="stylesheet" href="css/MarkerCluster.css">
+     <link rel="stylesheet" href="css/leaflet.extra-markers.min.css">
+     <link rel="stylesheet" href="node_modules/@fortawesome/fontawesome-free/css/all.min.css">
+     <link rel="stylesheet" href="css/easy-button.css">
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-extra-markers@1.2.1/dist/css/leaflet.extra-markers.min.css">
+
+   
+
+
+    <!--My style sheet-->
+    <link rel="stylesheet"  href="css/style.css"> 
+    
+  
+  </head>
+
+  <body>
+    
+      <div id="preloader">
+      <div class="loader"></div>
+    </div>
+          
+          <div id="selectContainer">
+            <select id="countrySelect" class="form-select shadow-sm">
+              <!-- This will be populated dynamically -->
+             <!-- populate from an AJAX CALL to a PHP routine that returns a JSON object that is an array of just ISO codes and names from countryBorders.geo.json -->
+              <option value="AF">Select Country</option>
+            </select>
+          </div>
+        
+      
+      
+	
+      
+      <div id="map" ></div>
+     
+      
+    
+<!-- Country Information Modal -->
+<div class="modal fade" id="countryInfoModal" data-bs-backdrop="false"  tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content shadow">
+      <div class="modal-header bg-primary bg-gradient text-white">
+        <h5 class="modal-title"><i class="fa-solid fa-circle-info fa-xl me-2"></i>Rundown</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div id="pre-load"></div>
+        
+        <table class="table table-striped">
+          <tr>
+            <td class="text-center col-2">
+              <i class="fa-solid fa-landmark-flag fa-xl text-success"></i>
+            </td>
+            <td class="text-nowrap">
+              Capital city
+            </td>
+            <td id="capitalCity" class="text-end"></td>
+          </tr>
+
+          <tr>
+            <td class="text-center">
+              <i class="fa-solid fa-globe fa-xl text-success"></i>
+            </td>
+            <td>
+              Continent
+            </td>
+            <td id="continent" class="text-end"></td>
+          </tr>
+
+          <tr>
+            <td class="text-center">
+              <i class="fa-solid fa-ear-listen fa-xl text-success"></i>
+            </td>
+            <td>
+              Languages
+            </td>
+            <td id="languages" class="text-end"></td>
+          </tr>
+
+          <tr>
+            <td class="text-center">
+              <i class="fa-solid fa-coins fa-xl text-success"></i>
+            </td>
+            <td>
+              Currency
+            </td>
+            <td id="currency" class="text-end"></td>
+          </tr>
+
+          <tr>
+            <td class="text-center">
+              <i class="fa-solid fa-equals fa-xl text-success"></i>
+            </td>
+            <td class="text-nowrap">
+              ISO alpha 2
+            </td>
+            <td id="isoAlpha2" class="text-end"></td>
+          </tr>
+
+          <tr>
+            <td class="text-center">
+              <i class="fa-solid fa-person fa-xl text-success"></i>
+            </td>
+            <td>
+              Population
+            </td>
+            <td id="population" class="text-end"></td>
+          </tr>
+
+        </table>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-success btn-sm" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Weather Modal -->
+<div id="weatherModal" class="modal fade" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="weatherModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content shadow">
+      <div class="modal-header bg-primary bg-gradient text-white">
+        <h5 class="modal-title" id="weatherModalLabel"><i class="fa-solid fa-cloud-sun"></i></h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Today's weather box -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title mb-3">Today</h5>
+                <div class="row align-items-center">
+                  <div class="col-4 text-center">
+                    <p id="todayConditions" class="fw-bold fs-6 mb-0"></p>
+                  </div>
+                  <div class="col-4 text-center">
+                    <img id="todayIcon" class="img-fluid" src="" alt="">
+                  </div>
+                  <div class="col-4 text-center">
+                    <p class="fw-bold fs-4 mb-0"><span id="todayHighTemp"></span>°</p>
+                    <p class="fs-5 mb-0 text-secondary"><span id="todayLowTemp"></span>°</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Forecast container for 2x2 grid -->
+        <div id="forecastContainer">
+          <!-- Forecast days will be dynamically inserted here -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <p class="fs-6 fw-light mb-0">Last updated <span id="lastUpdated"></span></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Environmental Statistics Modal -->
+<div class="modal fade" id="environmentalStatsModal"  data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="environmentalStatsModalLabel">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content shadow">
+      <div class="modal-header bg-primary bg-gradient text-white">
+        <h5 class="modal-title"><i class="fa-solid fa-leaf fa-xl me-2"></i>Environmental Statistics</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="card mb-4 shadow-sm">
+          <div class="card-body">
+            <table class="table table-striped mb-0">
+              <tr>
+                <td class="text-center col-2">
+                  <i class="fa-solid fa-tree fa-xl text-success"></i>
+                </td>
+                <td>Forest Area</td>
+                <td id="forestArea" class="text-end"></td>
+              </tr>
+              <tr>
+                <td class="text-center">
+                  <i class="fa-solid fa-smog fa-xl text-success"></i>
+                </td>
+                <td>CO2 Emissions</td>
+                <td id="co2Emissions" class="text-end"></td>
+              </tr>
+              <tr>
+                <td class="text-center">
+                  <i class="fa-solid fa-sun fa-xl text-success"></i>
+                </td>
+                <td>Renewable Energy</td>
+                <td id="renewableEnergy" class="text-end"></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-success btn-sm" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- News Modal -->
+<div class="modal fade" id="newsModal"  data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header bg-primary bg-gradient text-white">
+            <h5 class="modal-title" id="newsModalLabel"><i class="fa-solid fa-newspaper"></i> Latest News</h5>            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+            <div class="modal-body">
+                <div id="newsContent">
+                    <!-- News content will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Currency Modal -->
+<div class="modal fade" id="currencyModal"  data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="currencyModalLabel">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content shadow">
+      <div class="modal-header bg-primary bg-gradient text-white">
+        <h5 class="modal-title"><i class="fa-solid fa-money-bill-wave fa-xl me-2"></i>Currency Converter</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="card mb-4 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="card-subtitle text-muted">Exchange Rate</h6>
+              <small class="text-muted last-updated"></small>
+            </div>
+            <div class="conversion-rate fs-5 fw-bold text-primary"></div>
+          </div>
+        </div>
+        
+        <div class="row g-3">
+          <div class="col-12">
+            <label for="amountToConvert" class="form-label">Amount</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fa-solid fa-calculator"></i></span>
+              <input type="number" class="form-control form-control-lg" id="amountToConvert" value="1">
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+            <label for="fromCurrency" class="form-label">From</label>
+            <select id="fromCurrency" class="form-select form-select-lg"></select>
+          </div>
+          
+          <div class="col-md-6">
+            <label for="toCurrency" class="form-label">To</label>
+            <select id="toCurrency" class="form-select form-select-lg"></select>
+          </div>
+        </div>
+
+        <div class="card mt-4 bg-light">
+          <div class="card-body text-center">
+            <h6 class="text-muted mb-2">Converted Amount</h6>
+            <p class="conversion-amount fs-4 fw-bold mb-0 text-primary"></p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-success btn-sm" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Leaflet Scripts -->
+<script src="node_modules/leaflet/dist/leaflet.js"></script>
+<script src="node_modules/leaflet-easybutton/src/easy-button.js"></script>
+
+<!-- MarkerCluster -->
+<script src="node_modules/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="node_modules/jquery/dist/jquery.slim.min.js"></script>
+<script src="js/jquery-3.7.1.min.js"></script>
+<script src="node_modules/popper.js/dist/umd/popper.min.js"></script>
+<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="js/leaflet.extra-markers.min.js"></script>
+<!-- <script src="/project1/js/adamwdraper-Numeral-js-7de892f/min/numeral.min.js"></script>
+<script src="/project1/js/date.js"></script> -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script> -->
+<script src="js/script.js"></script>
+
+
+
+  </body>
+</html>
